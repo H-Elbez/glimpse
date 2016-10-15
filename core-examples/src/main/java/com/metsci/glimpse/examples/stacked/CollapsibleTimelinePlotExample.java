@@ -26,8 +26,7 @@
  */
 package com.metsci.glimpse.examples.stacked;
 
-import static com.metsci.glimpse.util.logging.LoggerUtils.logInfo;
-import static com.metsci.glimpse.util.logging.LoggerUtils.logWarning;
+import static com.metsci.glimpse.util.logging.LoggerUtils.*;
 
 import java.io.IOException;
 import java.util.Set;

@@ -44,10 +44,12 @@ import com.metsci.glimpse.axis.listener.mouse.AxisMouseListener1D;
 import com.metsci.glimpse.axis.painter.NumericXYAxisPainter;
 import com.metsci.glimpse.axis.painter.label.AxisLabelHandler;
 import com.metsci.glimpse.axis.painter.label.GridAxisLabelHandler;
-import com.metsci.glimpse.axis.painter.label.TimeAxisLabelHandler;
+import com.metsci.glimpse.axis.painter.label.time.AbsoluteTimeAxisLabelHandler;
+import com.metsci.glimpse.axis.painter.label.time.TimeAxisLabelHandler;
 import com.metsci.glimpse.axis.tagged.OrderedConstraint;
 import com.metsci.glimpse.axis.tagged.Tag;
 import com.metsci.glimpse.axis.tagged.TaggedAxis1D;
+import com.metsci.glimpse.axis.tagged.TaggedAxisMouseListener1D;
 import com.metsci.glimpse.context.GlimpseTargetStack;
 import com.metsci.glimpse.event.mouse.GlimpseMouseAllListener;
 import com.metsci.glimpse.event.mouse.GlimpseMouseEvent;
@@ -193,7 +195,7 @@ public class StackedTimePlot2D extends StackedPlot2D
         this.plotMouseListeners = new CopyOnWriteArrayList<PlotMouseListener>( );
 
         this.setBorderSize( 0 );
-        this.timeTickHandler = new TimeAxisLabelHandler( TimeZone.getTimeZone( "GMT-0:00" ), epoch );
+        this.timeTickHandler = new AbsoluteTimeAxisLabelHandler( TimeZone.getTimeZone( "GMT-0:00" ), epoch );
 
         this.initializeTimeAxis( );
         this.defaultTimelineInfo = this.createTimeline( );
@@ -203,6 +205,15 @@ public class StackedTimePlot2D extends StackedPlot2D
     public void setTimeAxisLabelHandler( TimeAxisLabelHandler handler )
     {
         this.timeTickHandler = handler;
+        this.timeTickHandler.setEpoch( this.epoch );
+        
+        for ( PlotInfo info : getAllPlots( ) )
+        {
+            if ( info instanceof TimelineInfo )
+            {
+                ( (TimelineInfo) info ).getAxisPainter( ).setLabelHandler( handler );
+            }
+        }
     }
 
     public TimeAxisLabelHandler getTimeAxisLabelHandler( )
@@ -1038,7 +1049,7 @@ public class StackedTimePlot2D extends StackedPlot2D
         return new DataAxisMouseListener1D( this, plotInfo );
     }
 
-    protected TimeAxisMouseListener1D createTimeAxisListener( )
+    protected TaggedAxisMouseListener1D createTimeAxisListener( )
     {
         return new TimeAxisMouseListener1D( this );
     }
